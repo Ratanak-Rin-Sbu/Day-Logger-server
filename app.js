@@ -1,14 +1,19 @@
 // NOTE setup MongoDB and Express here
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const Question = require('./models/question');
 const User = require('./models/user');
-const cors = require('cors');
+const bodyParser = require('body-parser');
 const app = express();
+const MongoStore = require('connect-mongo');
 const session = require('express-session');
 
 app.use(express.json());
-app.use(cors());
+// app.use(cors());
+app.use(cors({ origin: 'http://localhost:3000', optionsSuccessStatus: 200 }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 var mongoDB =
 	'mongodb+srv://Cse316rnsj:cse316finalp@cluster0.le5hh.mongodb.net/DayLogger';
@@ -24,6 +29,46 @@ function wrapAsync(fn) {
 		fn(req, res, next).catch((e) => next(e));
 	};
 }
+
+const sessionSecret = 'make a secret string';
+
+const store = MongoStore.create({
+	mongoUrl: mongoDB,
+	secret: sessionSecret,
+	touchAfter: 24 * 60 * 60,
+});
+
+const sessionConfig = {
+	store,
+	name: 'session',
+	secret: sessionSecret,
+	resave: false,
+	saveUninitialized: true,
+	cookie: {
+		httpOnly: true,
+		expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+		maxAge: 1000 * 60 * 60 * 24 * 7,
+	},
+};
+
+app.use(session(sessionConfig));
+
+app.use((req, res, next) => {
+	req.requestTime = Date.now();
+	console.log(req.method, req.path);
+	next();
+});
+
+app.use((err, req, res, next) => {
+	console.log('Error handling called');
+	res.statusMessage = err.message;
+
+	if (err.name === 'ValidationError') {
+		res.status(400).end();
+	} else {
+		res.status(500).end();
+	}
+});
 
 // NOTE get all questions
 app.get('/api/questions', async (req, res) => {
