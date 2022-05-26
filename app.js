@@ -1,9 +1,11 @@
 // NOTE setup MongoDB and Express here
 const express = require('express');
 const mongoose = require('mongoose');
-const Question = require('./models/Question');
+const Question = require('./models/question');
+const User = require('./models/user');
 const cors = require('cors');
 const app = express();
+const session = require('express-session');
 
 app.use(express.json());
 app.use(cors());
@@ -16,6 +18,12 @@ mongoose
 	.catch(console.error);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+function wrapAsync(fn) {
+	return function (req, res, next) {
+		fn(req, res, next).catch((e) => next(e));
+	};
+}
 
 // NOTE get all questions
 app.get('/api/questions', async (req, res) => {
@@ -59,8 +67,6 @@ app.put('/api/questions/:id', async function (req, res) {
 				console.log('ERROR: ' + err);
 				res.send(err);
 			} else {
-				// Status 204 represents success with no content
-				// https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204
 				res.sendStatus(204);
 			}
 		}
@@ -72,6 +78,73 @@ app.delete('/api/questions/:id', async (req, res) => {
 	const result = await Question.findByIdAndDelete(req.params.id);
 
 	res.json(result);
+});
+
+// NOTE register user
+app.post(
+	'/api/register',
+	wrapAsync(async function (req, res) {
+		const { name, email, password } = req.body;
+		const user = new User({ name, email, password });
+		await user.save();
+		req.session.userId = user._id;
+		console.log(user);
+		res.json(user);
+	})
+);
+
+// NOTE login user
+app.post(
+	'/api/login',
+	wrapAsync(async function (req, res) {
+		const { email, password } = req.body;
+		const user = await User.findAndValidate(email, password);
+		console.log(user);
+		if (user) {
+			req.session.userId = user._id;
+			res.json(user);
+		} else {
+			res.sendStatus(401);
+		}
+	})
+);
+
+// NOTE logout user
+app.post(
+	'/api/logout',
+	wrapAsync(async function (req, res) {
+		req.session.userId = null;
+		res.sendStatus(204);
+	})
+);
+
+// NOTE get a user
+app.get('/api/users/loggedInUser', async function (req, res) {
+	const user = await User.findOne({ _id: req.session.userId });
+	console.log(user);
+	res.json(user);
+});
+
+// NOTE update a user
+app.put('/api/users', async function (req, res) {
+	const id = req.session.userId;
+	console.log(req.body);
+	User.findByIdAndUpdate(
+		id,
+		{
+			name: req.body.name,
+			email: req.body.email,
+			profileImageUrl: req.body.profileImageUrl,
+		},
+		function (err, result) {
+			if (err) {
+				console.log('ERROR: ' + err);
+				res.send(err);
+			} else {
+				res.sendStatus(204);
+			}
+		}
+	);
 });
 
 const port = 5000;
