@@ -2,14 +2,14 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const Question = require('./models/question');
-const User = require('./models/user');
 const bodyParser = require('body-parser');
 const app = express();
 const MongoStore = require('connect-mongo');
 const session = require('express-session');
+const Question = require('./models/question');
+const User = require('./models/user');
 
-app.use(express.json());
+// app.use(express.json());
 // app.use(cors());
 app.use(cors({ origin: 'http://localhost:3000', optionsSuccessStatus: 200 }));
 app.use(bodyParser.json());
@@ -127,7 +127,7 @@ app.delete('/api/questions/:id', async (req, res) => {
 
 // NOTE register user
 app.post(
-	'/api/register',
+	`/api/register`,
 	wrapAsync(async function (req, res) {
 		const { name, email, password } = req.body;
 		const user = new User({ name, email, password });
@@ -137,6 +137,22 @@ app.post(
 		res.json(user);
 	})
 );
+
+// app.post(
+// 	`/api/register`,
+// 	wrapAsync(async function (req, res) {
+// 		const profileImgURL =
+// 			'https://w7.pngwing.com/pngs/867/694/png-transparent-user-profile-default-computer-icons-network-video-recorder-avatar-cartoon-maker-blue-text-logo.png';
+// 		const { password, email, name } = req.body;
+// 		const user = new User({ email, password, name, profileImgURL });
+// 		await user.save();
+// 		req.session.userId = user._id;
+// 		req.session.userEmail = user.email;
+// 		// Note: this is returning the entire user object to demo, which will include the hashed and salted password.
+// 		// In practice, you wouldn't typically do this – a success status would suffice, or perhaps just the user id.
+// 		res.json(user);
+// 	})
+// );
 
 // NOTE login user
 app.post(
