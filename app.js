@@ -71,18 +71,19 @@ app.use((err, req, res, next) => {
 });
 
 // NOTE get all questions
-app.get('/api/questions', async (req, res) => {
-	const questions = await Question.find();
-	res.json(questions);
-});
-
-// app.get('/api/questions', async function (req, res) {
-// 	const questions = await Question.find({ agent: req.session.userId });
-// 	const modifiedQuestions = questions.map((mappedQuestion) => {
-// 		return mappedQuestion.toObject();
-// 	});
-// 	res.json(modifiedQuestions.reverse());
+// app.get('/api/questions', async (req, res) => {
+// 	const questions = await Question.find();
+// 	res.json(questions);
 // });
+
+// REVIEW get all questions
+app.get('/api/questions', async function (req, res) {
+	const notes = await Question.find({ agent: req.session.userId });
+	const modifiedQuestions = notes.map((mappedQuestion) => {
+		return mappedQuestion.toObject();
+	});
+	res.json(modifiedQuestions.reverse());
+});
 
 // NOTE create new question
 app.post('/api/questions', async (req, res) => {
@@ -91,6 +92,8 @@ app.post('/api/questions', async (req, res) => {
 		type: req.body.type,
 		date: req.body.date,
 		choices: req.body.choices,
+		// response: {},
+		agent: req.session.userId,
 	});
 	await newQuestion.save();
 	res.json(newQuestion);

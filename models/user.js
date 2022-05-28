@@ -27,14 +27,15 @@ var UserSchema = new Schema({
 	// Address in an embedded document in the User’s schema or referenced in a separate
 	// document.
 
-	// address1: {
-	// 	type: String,
-	// 	default: '',
-	// },
-	// address2: {
-	// 	type: String,
-	// 	default: '',
-	// },
+	address1: {
+		type: String,
+		default: '',
+	},
+	address2: {
+		type: String,
+		default: '',
+  },
+  
 	profileImageUrl: {
 		type: String,
 		default: '',
