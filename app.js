@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Question = require('./models/Question');
 const cors = require('cors');
 const app = express();
+const {wrapAsync} = require('./utils/helper');
 
 app.use(express.json());
 app.use(cors());
@@ -18,10 +19,10 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // NOTE get all questions
-app.get('/api/questions', async (req, res) => {
+app.get('/api/questions', wrapAsync (async function (req, res) {
 	const questions = await Question.find();
 	res.json(questions);
-});
+}));
 
 // app.get('/api/questions', async function (req, res) {
 // 	const questions = await Question.find({ agent: req.session.userId });
@@ -32,20 +33,23 @@ app.get('/api/questions', async (req, res) => {
 // });
 
 // NOTE create new question
-app.post('/api/questions', async (req, res) => {
+app.post('/api/questions', wrapAsync (async function (req, res) {
 	const newQuestion = new Question({
 		text: req.body.text,
 		type: req.body.type,
 		date: req.body.date,
 		choices: req.body.choices,
+		responses: req.body.responses
 	});
 	await newQuestion.save();
 	res.json(newQuestion);
-});
+}))
 
 // NOTE udpdate a question
-app.put('/api/questions/:id', async function (req, res) {
+app.put('/api/questions/:id', wrapAsync(async function (req, res) {
 	let id = req.params.id;
+	if (!mongoose.Types.ObjectId.isValid(id)) 
+      return res.status(404).json({ msg: `No task with id :${id}` });
 	Question.findByIdAndUpdate(
 		id,
 		{
@@ -53,6 +57,7 @@ app.put('/api/questions/:id', async function (req, res) {
 			type: req.body.type,
 			date: req.body.date,
 			choices: req.body.choices,
+			responses: req.body.responses,
 		},
 		function (err, result) {
 			if (err) {
@@ -65,14 +70,17 @@ app.put('/api/questions/:id', async function (req, res) {
 			}
 		}
 	);
-});
+}));
 
 // NOTE delete a question
-app.delete('/api/questions/:id', async (req, res) => {
+app.delete('/api/questions/:id', wrapAsync(async (req, res) => {
+	const { id: id } = req.params;
+	if (!mongoose.Types.ObjectId.isValid(id)) 
+      return res.status(404).json({ msg: `No task with id :${id}` });
+			
 	const result = await Question.findByIdAndDelete(req.params.id);
-
 	res.json(result);
-});
+}));
 
 const port = 5000;
 app.listen(port, () => console.log(`Server started on port ${port}`));

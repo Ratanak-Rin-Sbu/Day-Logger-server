@@ -8,7 +8,8 @@ var QuestionSchema = new Schema(
     text: {type: String},
     type: {type: String},
     date: {type: String},
-    choices: {type: Array}
+    choices: {type: Array},
+    responses: {type: Array}
   }
 )
 
