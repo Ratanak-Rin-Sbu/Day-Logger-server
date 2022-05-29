@@ -4,10 +4,14 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
+
 const MongoStore = require('connect-mongo');
 const session = require('express-session');
 const Question = require('./models/question');
 const User = require('./models/user');
+
+const {wrapAsync} = require('./utils/helper');
+
 
 // app.use(express.json());
 // app.use(cors());
@@ -86,7 +90,7 @@ app.get('/api/questions', async function (req, res) {
 });
 
 // NOTE create new question
-app.post('/api/questions', async (req, res) => {
+app.post('/api/questions', wrapAsync (async function (req, res) {
 	const newQuestion = new Question({
 		text: req.body.text,
 		type: req.body.type,
@@ -94,14 +98,17 @@ app.post('/api/questions', async (req, res) => {
 		choices: req.body.choices,
 		// response: {},
 		agent: req.session.userId,
+		responses: req.body.responses
 	});
 	await newQuestion.save();
 	res.json(newQuestion);
-});
+}))
 
 // NOTE udpdate a question
-app.put('/api/questions/:id', async function (req, res) {
+app.put('/api/questions/:id', wrapAsync(async function (req, res) {
 	let id = req.params.id;
+	if (!mongoose.Types.ObjectId.isValid(id)) 
+      return res.status(404).json({ msg: `No task with id :${id}` });
 	Question.findByIdAndUpdate(
 		id,
 		{
@@ -109,6 +116,7 @@ app.put('/api/questions/:id', async function (req, res) {
 			type: req.body.type,
 			date: req.body.date,
 			choices: req.body.choices,
+			responses: req.body.responses,
 		},
 		function (err, result) {
 			if (err) {
@@ -119,14 +127,17 @@ app.put('/api/questions/:id', async function (req, res) {
 			}
 		}
 	);
-});
+}));
 
 // NOTE delete a question
-app.delete('/api/questions/:id', async (req, res) => {
+app.delete('/api/questions/:id', wrapAsync(async (req, res) => {
+	const { id: id } = req.params;
+	if (!mongoose.Types.ObjectId.isValid(id)) 
+      return res.status(404).json({ msg: `No task with id :${id}` });
+			
 	const result = await Question.findByIdAndDelete(req.params.id);
-
 	res.json(result);
-});
+}));
 
 // NOTE register user
 app.post(
