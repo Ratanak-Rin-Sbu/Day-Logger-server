@@ -9,7 +9,7 @@ var QuestionSchema = new Schema(
     type: {type: String},
     date: {type: String},
     choices: {type: Array},
-    responses: {type: Array},
+    responses: {type: String},
     agent: { type: Schema.Types.ObjectId, ref: 'User', required: false },
   }
 )
