@@ -21,12 +21,10 @@ var UserSchema = new Schema({
 		type: String,
 		default: '',
 	},
-
 	// REVIEW Address: the address should be stored as two separate strings, one for each text field. The
 	// address strings should NOT be stored directly in the User schema – either store the
 	// Address in an embedded document in the User’s schema or referenced in a separate
 	// document.
-
 	address1: {
 		type: String,
 		default: '',
@@ -34,8 +32,7 @@ var UserSchema = new Schema({
 	address2: {
 		type: String,
 		default: '',
-  },
-  
+	},
 	profileImageUrl: {
 		type: String,
 		default: '',
