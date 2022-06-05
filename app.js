@@ -204,11 +204,12 @@ app.get('/api/users/loggedInUser', async function (req, res) {
 
 // NOTE get all users
 app.get('/api/users', async function (req, res) {
-	const users = await Question.find({ agent: req.session.userId });
-	const modifiedUsers = users.map((mappedUsers) => {
-		return mappedUsers.toObject();
-	});
-	res.json(modifiedUsers.reverse());
+	const users = await User.find({});
+	// const modifiedUsers = users.map((mappedUsers) => {
+	// 	return mappedUsers.toObject();
+	// });
+	// res.json(modifiedUsers.reverse());
+	res.json(users);
 });
 
 // NOTE update a user
