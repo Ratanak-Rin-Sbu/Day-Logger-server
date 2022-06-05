@@ -97,7 +97,7 @@ app.post('/api/questions', wrapAsync (async function (req, res) {
 	res.json(newQuestion);
 }))
 
-// NOTE update a question
+// NOTE udpdate a question
 app.put('/api/questions/:id', wrapAsync(async function (req, res) {
 	let id = req.params.id;
 	if (!mongoose.Types.ObjectId.isValid(id)) 
@@ -109,12 +109,17 @@ app.put('/api/questions/:id', wrapAsync(async function (req, res) {
 			type: req.body.type,
 			date: req.body.date,
 			choices: req.body.choices,
-			agent: req.session.userId,
-		});
-		await newQuestion.save();
-		res.json(newQuestion);
-	})
-);
+		},
+		function (err, result) {
+			if (err) {
+				console.log('ERROR: ' + err);
+				res.send(err);
+			} else {
+				res.sendStatus(204);
+			}
+		}
+	);
+}));
 
 // NOTE delete a question
 app.delete(
