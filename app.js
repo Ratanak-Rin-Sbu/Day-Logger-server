@@ -9,6 +9,8 @@ const MongoStore = require('connect-mongo');
 const session = require('express-session');
 const Question = require('./models/question');
 const User = require('./models/user');
+const numberResponse = require('./models/numberResponse');
+const textResponse = require('./models/textResponse');
 
 const {wrapAsync} = require('./utils/helper');
 
@@ -98,7 +100,6 @@ app.post('/api/questions', wrapAsync (async function (req, res) {
 		choices: req.body.choices,
 		// response: {},
 		agent: req.session.userId,
-		responses: req.body.responses
 	});
 	await newQuestion.save();
 	res.json(newQuestion);
@@ -138,6 +139,48 @@ app.delete('/api/questions/:id', wrapAsync(async (req, res) => {
 	const result = await Question.findByIdAndDelete(req.params.id);
 	res.json(result);
 }));
+
+// REVIEW get all number responses
+app.get('/api/number/responses', async function (req, res) {
+	const numberResponses = await numberResponse.find();
+	const modifiedResponses = numberResponses.map((mappedResponse) => {
+		return mappedResponse.toObject();
+	});
+	res.json(modifiedResponses.reverse());
+});
+
+// REVIEW get all text responses
+app.get('/api/text/responses', async function (req, res) {
+	const textResponses = await textResponse.find();
+	const modifiedResponses = textResponses.map((mappedResponse) => {
+		return mappedResponse.toObject();
+	});
+	res.json(modifiedResponses.reverse());
+});
+
+// NOTE create new number response
+app.post('/api/number/responses', wrapAsync (async function (req, res) {
+	const newNumberResponse = new numberResponse({
+		response: req.body.response,
+		date: req.body.date,
+		di: req.body.di,
+		type: req.body.type,
+	});
+	await newNumberResponse.save();
+	res.json(newNumberResponse);
+}))
+
+// NOTE create new text response
+app.post('/api/text/responses', wrapAsync (async function (req, res) {
+	const newTextResponse = new textResponse({
+		response: req.body.response,
+		date: req.body.date,
+		di: req.body.di,
+		type: req.body.type,
+	});
+	await newTextResponse.save();
+	res.json(newTextResponse);
+}))
 
 // NOTE register user
 app.post(
