@@ -12,8 +12,7 @@ const User = require('./models/user');
 const numberResponse = require('./models/numberResponse');
 const textResponse = require('./models/textResponse');
 
-const {wrapAsync} = require('./utils/helper');
-
+const { wrapAsync } = require('./utils/helper');
 
 // app.use(express.json());
 // app.use(cors());
@@ -77,15 +76,9 @@ app.use((err, req, res, next) => {
 });
 
 // NOTE get all questions
-// app.get('/api/questions', async (req, res) => {
-// 	const questions = await Question.find();
-// 	res.json(questions);
-// });
-
-// REVIEW get all questions
 app.get('/api/questions', async function (req, res) {
-	const notes = await Question.find({ agent: req.session.userId });
-	const modifiedQuestions = notes.map((mappedQuestion) => {
+	const questions = await Question.find({ agent: req.session.userId });
+	const modifiedQuestions = questions.map((mappedQuestion) => {
 		return mappedQuestion.toObject();
 	});
 	res.json(modifiedQuestions.reverse());
@@ -98,14 +91,13 @@ app.post('/api/questions', wrapAsync (async function (req, res) {
 		type: req.body.type,
 		date: req.body.date,
 		choices: req.body.choices,
-		// response: {},
 		agent: req.session.userId,
 	});
 	await newQuestion.save();
 	res.json(newQuestion);
 }))
 
-// NOTE udpdate a question
+// NOTE update a question
 app.put('/api/questions/:id', wrapAsync(async function (req, res) {
 	let id = req.params.id;
 	if (!mongoose.Types.ObjectId.isValid(id)) 
@@ -117,28 +109,25 @@ app.put('/api/questions/:id', wrapAsync(async function (req, res) {
 			type: req.body.type,
 			date: req.body.date,
 			choices: req.body.choices,
-			responses: req.body.responses,
-		},
-		function (err, result) {
-			if (err) {
-				console.log('ERROR: ' + err);
-				res.send(err);
-			} else {
-				res.sendStatus(204);
-			}
-		}
-	);
-}));
+			agent: req.session.userId,
+		});
+		await newQuestion.save();
+		res.json(newQuestion);
+	})
+);
 
 // NOTE delete a question
-app.delete('/api/questions/:id', wrapAsync(async (req, res) => {
-	const { id: id } = req.params;
-	if (!mongoose.Types.ObjectId.isValid(id)) 
-      return res.status(404).json({ msg: `No task with id :${id}` });
-			
-	const result = await Question.findByIdAndDelete(req.params.id);
-	res.json(result);
-}));
+app.delete(
+	'/api/questions/:id',
+	wrapAsync(async (req, res) => {
+		const { id: id } = req.params;
+		if (!mongoose.Types.ObjectId.isValid(id))
+			return res.status(404).json({ msg: `No task with id :${id}` });
+
+		const result = await Question.findByIdAndDelete(req.params.id);
+		res.json(result);
+	})
+);
 
 // REVIEW get all number responses
 app.get('/api/number/responses', async function (req, res) {
@@ -243,6 +232,16 @@ app.get('/api/users/loggedInUser', async function (req, res) {
 	res.json(user);
 });
 
+// NOTE get all users
+app.get('/api/users', async function (req, res) {
+	const users = await User.find({});
+	// const modifiedUsers = users.map((mappedUsers) => {
+	// 	return mappedUsers.toObject();
+	// });
+	// res.json(modifiedUsers.reverse());
+	res.json(users);
+});
+
 // NOTE update a user
 app.put('/api/users', async function (req, res) {
 	const id = req.session.userId;
@@ -252,6 +251,8 @@ app.put('/api/users', async function (req, res) {
 		{
 			name: req.body.name,
 			email: req.body.email,
+			address1: req.body.address1,
+			address2: req.body.address2,
 			profileImageUrl: req.body.profileImageUrl,
 		},
 		function (err, result) {
@@ -264,9 +265,6 @@ app.put('/api/users', async function (req, res) {
 		}
 	);
 });
-
-// const port = 5000;
-// app.listen(port, () => console.log(`Server started on port ${port}`));
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
