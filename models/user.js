@@ -19,6 +19,7 @@ var UserSchema = new Schema({
 	},
 	password: {
 		type: String,
+		minlength: 8,
 		default: '',
 	},
 	// REVIEW Address: the address should be stored as two separate strings, one for each text field. The
