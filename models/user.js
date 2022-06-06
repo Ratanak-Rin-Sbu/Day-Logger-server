@@ -19,13 +19,13 @@ var UserSchema = new Schema({
 	},
 	password: {
 		type: String,
-		minlength: 8,
 		default: '',
+		minlength: 8,
+		validate: {
+			validator: validator.validatePassword,
+			message: (props) => `${props.value} is not a valid password!`,
+		},
 	},
-	// REVIEW Address: the address should be stored as two separate strings, one for each text field. The
-	// address strings should NOT be stored directly in the User schema – either store the
-	// Address in an embedded document in the User’s schema or referenced in a separate
-	// document.
 	address1: {
 		type: String,
 		default: '',
@@ -37,6 +37,11 @@ var UserSchema = new Schema({
 	profileImageUrl: {
 		type: String,
 		default: '',
+	},
+	// FIXME it won't save on the DB!!
+	isAdmin: {
+		type: Boolean,
+		default: false,
 	},
 });
 

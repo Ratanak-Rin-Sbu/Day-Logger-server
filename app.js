@@ -85,41 +85,47 @@ app.get('/api/questions', async function (req, res) {
 });
 
 // NOTE create new question
-app.post('/api/questions', wrapAsync (async function (req, res) {
-	const newQuestion = new Question({
-		text: req.body.text,
-		type: req.body.type,
-		date: req.body.date,
-		choices: req.body.choices,
-		agent: req.session.userId,
-	});
-	await newQuestion.save();
-	res.json(newQuestion);
-}))
-
-// NOTE udpdate a question
-app.put('/api/questions/:id', wrapAsync(async function (req, res) {
-	let id = req.params.id;
-	if (!mongoose.Types.ObjectId.isValid(id)) 
-      return res.status(404).json({ msg: `No task with id :${id}` });
-	Question.findByIdAndUpdate(
-		id,
-		{
+app.post(
+	'/api/questions',
+	wrapAsync(async function (req, res) {
+		const newQuestion = new Question({
 			text: req.body.text,
 			type: req.body.type,
 			date: req.body.date,
 			choices: req.body.choices,
-		},
-		function (err, result) {
-			if (err) {
-				console.log('ERROR: ' + err);
-				res.send(err);
-			} else {
-				res.sendStatus(204);
+			agent: req.session.userId,
+		});
+		await newQuestion.save();
+		res.json(newQuestion);
+	})
+);
+
+// NOTE udpdate a question
+app.put(
+	'/api/questions/:id',
+	wrapAsync(async function (req, res) {
+		let id = req.params.id;
+		if (!mongoose.Types.ObjectId.isValid(id))
+			return res.status(404).json({ msg: `No task with id :${id}` });
+		Question.findByIdAndUpdate(
+			id,
+			{
+				text: req.body.text,
+				type: req.body.type,
+				date: req.body.date,
+				choices: req.body.choices,
+			},
+			function (err, result) {
+				if (err) {
+					console.log('ERROR: ' + err);
+					res.send(err);
+				} else {
+					res.sendStatus(204);
+				}
 			}
-		}
-	);
-}));
+		);
+	})
+);
 
 // NOTE delete a question
 app.delete(
@@ -153,28 +159,34 @@ app.get('/api/text/responses', async function (req, res) {
 });
 
 // NOTE create new number response
-app.post('/api/number/responses', wrapAsync (async function (req, res) {
-	const newNumberResponse = new numberResponse({
-		response: req.body.response,
-		date: req.body.date,
-		di: req.body.di,
-		type: req.body.type,
-	});
-	await newNumberResponse.save();
-	res.json(newNumberResponse);
-}))
+app.post(
+	'/api/number/responses',
+	wrapAsync(async function (req, res) {
+		const newNumberResponse = new numberResponse({
+			response: req.body.response,
+			date: req.body.date,
+			di: req.body.di,
+			type: req.body.type,
+		});
+		await newNumberResponse.save();
+		res.json(newNumberResponse);
+	})
+);
 
 // NOTE create new text response
-app.post('/api/text/responses', wrapAsync (async function (req, res) {
-	const newTextResponse = new textResponse({
-		response: req.body.response,
-		date: req.body.date,
-		di: req.body.di,
-		type: req.body.type,
-	});
-	await newTextResponse.save();
-	res.json(newTextResponse);
-}))
+app.post(
+	'/api/text/responses',
+	wrapAsync(async function (req, res) {
+		const newTextResponse = new textResponse({
+			response: req.body.response,
+			date: req.body.date,
+			di: req.body.di,
+			type: req.body.type,
+		});
+		await newTextResponse.save();
+		res.json(newTextResponse);
+	})
+);
 
 // NOTE register user
 app.post(
@@ -188,22 +200,6 @@ app.post(
 		res.json(user);
 	})
 );
-
-// app.post(
-// 	`/api/register`,
-// 	wrapAsync(async function (req, res) {
-// 		const profileImgURL =
-// 			'https://w7.pngwing.com/pngs/867/694/png-transparent-user-profile-default-computer-icons-network-video-recorder-avatar-cartoon-maker-blue-text-logo.png';
-// 		const { password, email, name } = req.body;
-// 		const user = new User({ email, password, name, profileImgURL });
-// 		await user.save();
-// 		req.session.userId = user._id;
-// 		req.session.userEmail = user.email;
-// 		// Note: this is returning the entire user object to demo, which will include the hashed and salted password.
-// 		// In practice, you wouldn't typically do this – a success status would suffice, or perhaps just the user id.
-// 		res.json(user);
-// 	})
-// );
 
 // NOTE login user
 app.post(
