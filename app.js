@@ -144,7 +144,7 @@ app.delete(
 
 // REVIEW get all number responses
 app.get('/api/number/responses', async function (req, res) {
-	const numberResponses = await numberResponse.find();
+	const numberResponses = await numberResponse.find({ agent: req.session.userId });
 	const modifiedResponses = numberResponses.map((mappedResponse) => {
 		return mappedResponse.toObject();
 	});
@@ -153,7 +153,7 @@ app.get('/api/number/responses', async function (req, res) {
 
 // REVIEW get all text responses
 app.get('/api/text/responses', async function (req, res) {
-	const textResponses = await textResponse.find();
+	const textResponses = await textResponse.find({ agent: req.session.userId });
 	const modifiedResponses = textResponses.map((mappedResponse) => {
 		return mappedResponse.toObject();
 	});
@@ -162,7 +162,7 @@ app.get('/api/text/responses', async function (req, res) {
 
 // REVIEW get all boolean responses
 app.get('/api/boolean/responses', async function (req, res) {
-	const booleanResponses = await booleanResponse.find();
+	const booleanResponses = await booleanResponse.find({ agent: req.session.userId });
 	const modifiedResponses = booleanResponses.map((mappedResponse) => {
 		return mappedResponse.toObject();
 	});
@@ -171,7 +171,7 @@ app.get('/api/boolean/responses', async function (req, res) {
 
 // REVIEW get all mcq responses
 app.get('/api/mcq/responses', async function (req, res) {
-	const mcqResponses = await mcqResponse.find();
+	const mcqResponses = await mcqResponse.find({ agent: req.session.userId });
 	const modifiedResponses = mcqResponses.map((mappedResponse) => {
 		return mappedResponse.toObject();
 	});
