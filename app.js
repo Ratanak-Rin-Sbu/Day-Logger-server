@@ -209,28 +209,34 @@ app.post(
 );
 
 // NOTE create new boolean response
-app.post('/api/boolean/responses', wrapAsync (async function (req, res) {
-	const newBooleanResponse = new booleanResponse({
-		response: req.body.response,
-		date: req.body.date,
-		di: req.body.di,
-		type: req.body.type,
-	});
-	await newBooleanResponse.save();
-	res.json(newBooleanResponse);
-}))
+app.post(
+	'/api/boolean/responses',
+	wrapAsync(async function (req, res) {
+		const newBooleanResponse = new booleanResponse({
+			response: req.body.response,
+			date: req.body.date,
+			di: req.body.di,
+			type: req.body.type,
+		});
+		await newBooleanResponse.save();
+		res.json(newBooleanResponse);
+	})
+);
 
 // NOTE create new mcq response
-app.post('/api/mcq/responses', wrapAsync (async function (req, res) {
-	const newMcqResponse = new mcqResponse({
-		response: req.body.response,
-		date: req.body.date,
-		di: req.body.di,
-		type: req.body.type,
-	});
-	await newMcqResponse.save();
-	res.json(newMcqResponse);
-}))
+app.post(
+	'/api/mcq/responses',
+	wrapAsync(async function (req, res) {
+		const newMcqResponse = new mcqResponse({
+			response: req.body.response,
+			date: req.body.date,
+			di: req.body.di,
+			type: req.body.type,
+		});
+		await newMcqResponse.save();
+		res.json(newMcqResponse);
+	})
+);
 
 // NOTE register user
 app.post(
@@ -309,6 +315,13 @@ app.put('/api/users', async function (req, res) {
 			}
 		}
 	);
+});
+
+// NOTE delete a user by id
+app.delete('/api/users/:id', async function (req, res) {
+	let id = req.params.id;
+	const usersAfterDelete = await User.findByIdAndDelete(id);
+	res.json(usersAfterDelete);
 });
 
 const port = process.env.PORT || 5000;
