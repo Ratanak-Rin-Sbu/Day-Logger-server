@@ -11,6 +11,8 @@ const Question = require('./models/question');
 const User = require('./models/user');
 const numberResponse = require('./models/numberResponse');
 const textResponse = require('./models/textResponse');
+const booleanResponse = require('./models/booleanResponse');
+const mcqResponse = require('./models/mcqResponse');
 
 const { wrapAsync } = require('./utils/helper');
 
@@ -152,6 +154,24 @@ app.get('/api/text/responses', async function (req, res) {
 	res.json(modifiedResponses.reverse());
 });
 
+// REVIEW get all boolean responses
+app.get('/api/boolean/responses', async function (req, res) {
+	const booleanResponses = await booleanResponse.find();
+	const modifiedResponses = booleanResponses.map((mappedResponse) => {
+		return mappedResponse.toObject();
+	});
+	res.json(modifiedResponses.reverse());
+});
+
+// REVIEW get all mcq responses
+app.get('/api/mcq/responses', async function (req, res) {
+	const mcqResponses = await mcqResponse.find();
+	const modifiedResponses = mcqResponses.map((mappedResponse) => {
+		return mappedResponse.toObject();
+	});
+	res.json(modifiedResponses.reverse());
+});
+
 // NOTE create new number response
 app.post('/api/number/responses', wrapAsync (async function (req, res) {
 	const newNumberResponse = new numberResponse({
@@ -174,6 +194,30 @@ app.post('/api/text/responses', wrapAsync (async function (req, res) {
 	});
 	await newTextResponse.save();
 	res.json(newTextResponse);
+}))
+
+// NOTE create new boolean response
+app.post('/api/boolean/responses', wrapAsync (async function (req, res) {
+	const newBooleanResponse = new booleanResponse({
+		response: req.body.response,
+		date: req.body.date,
+		di: req.body.di,
+		type: req.body.type,
+	});
+	await newBooleanResponse.save();
+	res.json(newBooleanResponse);
+}))
+
+// NOTE create new mcq response
+app.post('/api/mcq/responses', wrapAsync (async function (req, res) {
+	const newMcqResponse = new mcqResponse({
+		response: req.body.response,
+		date: req.body.date,
+		di: req.body.di,
+		type: req.body.type,
+	});
+	await newMcqResponse.save();
+	res.json(newMcqResponse);
 }))
 
 // NOTE register user
