@@ -187,6 +187,7 @@ app.post(
 			date: req.body.date,
 			di: req.body.di,
 			type: req.body.type,
+			agent: req.session.userId,
 		});
 		await newNumberResponse.save();
 		res.json(newNumberResponse);
@@ -202,6 +203,7 @@ app.post(
 			date: req.body.date,
 			di: req.body.di,
 			type: req.body.type,
+			agent: req.session.userId,
 		});
 		await newTextResponse.save();
 		res.json(newTextResponse);
@@ -217,6 +219,7 @@ app.post(
 			date: req.body.date,
 			di: req.body.di,
 			type: req.body.type,
+			agent: req.session.userId,
 		});
 		await newBooleanResponse.save();
 		res.json(newBooleanResponse);
@@ -232,6 +235,7 @@ app.post(
 			date: req.body.date,
 			di: req.body.di,
 			type: req.body.type,
+			agent: req.session.userId,
 		});
 		await newMcqResponse.save();
 		res.json(newMcqResponse);
