@@ -9,6 +9,7 @@ var TextResponseSchema = new Schema(
     date: {type: String},
     di: {type: String},
     type: {type: String},
+    agent: { type: Schema.Types.ObjectId, ref: 'User', required: false },
   }
 )
 
