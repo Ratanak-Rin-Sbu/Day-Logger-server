@@ -179,6 +179,34 @@ app.get('/api/mcq/responses', async function (req, res) {
 	res.json(modifiedResponses.reverse());
 });
 
+// NOTE delete a number response
+app.delete('/api/number/responses/:id', async function (req, res) {
+	let id = req.params.id;
+	const numberAfterDelete = await numberResponse.findByIdAndDelete(id);
+	res.json(numberAfterDelete);
+});
+
+// NOTE delete a boolean response
+app.delete('/api/boolean/responses/:id', async function (req, res) {
+	let id = req.params.id;
+	const booleanAfterDelete = await booleanResponse.findByIdAndDelete(id);
+	res.json(booleanAfterDelete);
+});
+
+// NOTE delete a text response
+app.delete('/api/text/responses/:id', async function (req, res) {
+	let id = req.params.id;
+	const textAfterDelete = await textResponse.findByIdAndDelete(id);
+	res.json(textAfterDelete);
+});
+
+// NOTE delete a mcq response
+app.delete('/api/mcq/responses/:id', async function (req, res) {
+	let id = req.params.id;
+	const mcqAfterDelete = await mcqResponse.findByIdAndDelete(id);
+	res.json(mcqAfterDelete);
+});
+
 // for admin
 app.get('/api/questions/admin', async function (req, res) {
 	const questions = await Question.find();
