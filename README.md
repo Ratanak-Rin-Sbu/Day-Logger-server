@@ -33,3 +33,8 @@ This is a simple website where the user can Create, Read, Update, and Delete Que
 
 - Email: admin@admin.com
 - Password: Admin316
+
+## We have a test account to have set data
+
+- Email: test@test.com
+- Password: Test1234
